@@ -167,11 +167,11 @@ var AudioInstructions = Base.extend({
   },
 
   make: function(){
-    this.base();
-    var self = this;
-    $(this.el).click(function(e) { e.stopPropagation(); self.toggleSound(); });
+    // this.base();
+    // var self = this;
+    // $(this.el).click(function(e) { e.stopPropagation(); self.toggleSound(); });
 
-    this.setIcon();
+    // this.setIcon();
     return this;
   }
 });

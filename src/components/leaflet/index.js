@@ -107,7 +107,7 @@ var Leaflet = Base.extend({
       markerIcon = new L.Icon({
         iconUrl: ffwdme.defaults.imageBaseUrl + 'leaflet/map_marker.png',
         shadowUrl: ffwdme.defaults.imageBaseUrl + 'leaflet/map_marker_shadow.png',
-        iconSize: new L.Point(40, 40),
+        iconSize: new L.Point(40, 80),
         shadowSize: new L.Point(40, 40),
         iconAnchor: new L.Point(20, 20),
         popupAnchor: new L.Point(-3, -76)
