@@ -42,6 +42,9 @@
 var ServerGeoProvider = function(host, port) {
     this.url = 'http://' + host + ':' + port;
 
+    // Milliseconds between gps requests
+    this.pollInterval = 350;
+
     return this;
 };
 
@@ -58,11 +61,11 @@ ServerGeoProvider.prototype.getCurrentPosition = function(success, error, option
                     altitude: geo_data.altitude,
                     accuracy: 1, // No idea!
                     altitudeAccuracy: null,
-                    heading: null,
+                    heading: geo_data.track,
                     speed: geo_data.speed,
                 },
                 timestamp: Date.now()
-            })
+            });
         },
         error: function(e, message) {
             // interface PositionError {
@@ -76,7 +79,7 @@ ServerGeoProvider.prototype.getCurrentPosition = function(success, error, option
             error({
                 code: 1,
                 message: message
-            })
+            });
         }
     });
 };
@@ -85,7 +88,7 @@ ServerGeoProvider.prototype.watchPosition = function(success, error, options) {
     var that = this;
     var watchId = window.setInterval(function() {
         return that.getCurrentPosition(success, error, options);
-    })
+    }, this.pollInterval);
     return watchId;
 };
 
