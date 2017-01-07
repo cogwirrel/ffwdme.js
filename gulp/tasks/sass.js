@@ -12,6 +12,6 @@ gulp.task('sass', function () {
       .pipe(sass())
       .on('error', handleErrors)
     .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./build'))
+    .pipe(gulp.dest('../pi-nav/static'))
     .on('end', bundleLogger.end);
 });

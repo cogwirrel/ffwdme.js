@@ -60,11 +60,11 @@ gulp.task('browserify', function() {
         .pipe(source(outputFile))
         .pipe(buffer())
         .pipe(header(banner, { pkg : pkg }))
-        .pipe(gulp.dest('./build/'))
+        .pipe(gulp.dest('../pi-nav/static/'))
         // minified version
         .pipe(rename({ suffix: '.min' }))
         .pipe(uglify({ preserveComments: 'some' }))
-        .pipe(gulp.dest('./build/'))
+        .pipe(gulp.dest('../pi-nav/static'))
         // done
         .on('end', bundleLogger.end);
     }

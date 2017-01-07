@@ -1,5 +1,4 @@
 function init() {
-
   ffwdme.on('geoposition:init', function() {
     console.info("Waiting for initial geoposition...");
   });
@@ -14,7 +13,10 @@ function init() {
     routing: 'GraphHopper',
     graphHopper: {
       apiKey: CREDENTIALS.graphHopper
-    }
+    },
+    // This replaces the browsers implementation of geolocation with calls to the python server in 'pi-nav'
+    // See https://github.com/cogwirrel/pi-nav
+    geoProvider: new ServerGeoProvider('localhost', 5555),
   });
 
   var tileURL = "https://api.tiles.mapbox.com/v4/" + CREDENTIALS.mapboxId + "/{z}/{x}/{y}.png?access_token=" + CREDENTIALS.mapboxToken;
