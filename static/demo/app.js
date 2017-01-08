@@ -69,4 +69,8 @@ function init() {
       }
     })
   }, 350);
+
+  ffwdme.on('routecalculation:success', function(response) {
+    ffwdme.navigation.setRoute(response.route).start();
+  });
 }
