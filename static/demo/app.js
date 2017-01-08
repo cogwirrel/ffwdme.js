@@ -50,10 +50,23 @@ function init() {
     routing : new ffwdme.debug.components.Routing()
   };
 
-  if ((/debug=/).test(window.location.href)){
-    $('#views-toggle').click(function(){
-      $('#playground').toggleClass('hidden');
-    });
-    $('#views-toggle, #nav-info-trigger, #routing-trigger').removeClass('hidden');
-  }
+  // Poll the server for actions (better to use a websocket but I can't be bothered atm)
+  setInterval(function() {
+    // Check for actions
+    $.ajax({
+      url: "http://localhost:5555/api/poll-action",
+      success: function(data) {
+        if(data.action == "navigate-to") {
+          // Navigate to the given coords!
+          new ffwdme.routingService({
+            dest: { lat: data.payload.latitude, lng: data.payload.longitude }
+          }).fetch();
+        }
+      },
+      error: function(e) {
+        console.log("Error polling for action!");
+        console.log(e);
+      }
+    })
+  }, 350);
 }
