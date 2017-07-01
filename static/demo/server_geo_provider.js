@@ -42,7 +42,37 @@
 var ServerGeoProvider = function(host, port) {
     this.url = 'http://' + host + ':' + port;
 
-    // Milliseconds between gps requests
+    this.geo_data = {
+        coords: {
+            latitude: 0,
+            longitude: 0,
+            altitude: 0,
+            accuracy: 1,
+            altitudeAccuracy: null,
+            heading: 0,
+            speed: 0
+        },
+        timestamp: Date.now()
+    };
+
+    var that = this;
+    window.socket.on('gps-update', function(geo_data) {
+        console.log("Received gps update");
+        console.log(geo_data);
+        that.geo_data = {
+            coords: {
+                latitude: geo_data.latitude,
+                longitude: geo_data.longitude,
+                altitude: geo_data.altitude,
+                accuracy: 1, // No idea!
+                altitudeAccuracy: null,
+                heading: geo_data.track,
+                speed: geo_data.speed,
+            },
+            timestamp: Date.now()
+        };
+    });
+
     this.pollInterval = 350;
 
     return this;
@@ -51,37 +81,7 @@ var ServerGeoProvider = function(host, port) {
   
 ServerGeoProvider.prototype.getCurrentPosition = function(success, error, options) {
     // We ignore the options, just cause!
-    $.ajax({
-        url: this.url + '/api/gps',
-        success: function(geo_data) {
-            success({
-                coords: {
-                    latitude: geo_data.latitude,
-                    longitude: geo_data.longitude,
-                    altitude: geo_data.altitude,
-                    accuracy: 1, // No idea!
-                    altitudeAccuracy: null,
-                    heading: geo_data.track,
-                    speed: geo_data.speed,
-                },
-                timestamp: Date.now()
-            });
-        },
-        error: function(e, message) {
-            // interface PositionError {
-            //     const unsigned short PERMISSION_DENIED = 1;
-            //     const unsigned short POSITION_UNAVAILABLE = 2;
-            //     const unsigned short TIMEOUT = 3;
-            //     readonly attribute unsigned short code;
-            //     readonly attribute DOMString message;
-            //   };
-            // The server doesn't know how to error!
-            error({
-                code: 1,
-                message: message
-            });
-        }
-    });
+    success(this.geo_data);
 };
 
 ServerGeoProvider.prototype.watchPosition = function(success, error, options) {

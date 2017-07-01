@@ -1,4 +1,27 @@
 function init() {
+  window.socket = io.connect('http://127.0.0.1:5555/');
+
+  window.pinav = {};
+  window.pinav.switch_to = function(view) {
+    $('.pi-nav-container').hide();
+    $('#container-' + view).show();
+  };
+
+  window.socket.on('navigate-to', function(payload) {
+    console.log('Navigate to request!');
+    window.pinav.switch_to('nav');
+    new ffwdme.routingService({
+      dest: { lat: payload.latitude, lng: payload.longitude }
+    }).fetch();
+  });
+
+  window.socket.on('custom-action', function(payload) {
+    console.log('Custom action received!');
+    console.log(payload);
+    window.pinav.switch_to(payload.page);
+  });
+
+
   ffwdme.on('geoposition:init', function() {
     console.info("Waiting for initial geoposition...");
   });
@@ -50,27 +73,33 @@ function init() {
     routing : new ffwdme.debug.components.Routing()
   };
 
-  // Poll the server for actions (better to use a websocket but I can't be bothered atm)
-  setInterval(function() {
-    // Check for actions
-    $.ajax({
-      url: "http://localhost:5555/api/poll-action",
-      success: function(data) {
-        if(data.action == "navigate-to") {
-          // Navigate to the given coords!
-          new ffwdme.routingService({
-            dest: { lat: data.payload.latitude, lng: data.payload.longitude }
-          }).fetch();
-        }
-      },
-      error: function(e) {
-        console.log("Error polling for action!");
-        console.log(e);
-      }
-    })
-  }, 350);
 
   ffwdme.on('routecalculation:success', function(response) {
     ffwdme.navigation.setRoute(response.route).start();
+  });
+
+  var getColour = function( v ) {
+    var theColor = "";
+    if ( v < 50 ) {
+          myGreen = 255;
+          myRed = parseInt( ( ( v * 2 ) * 255 ) / 100 );
+      }
+    else  {
+          myGreen = parseInt( ( ( 100 - v ) * 2 ) * 255 / 100 );
+          myRed = 255;
+      }
+    theColor = "rgb(" + myRed + "," + myGreen + ",0)"; 
+    return( theColor );
+  };
+
+  $("#dial-speed").knob();
+
+  $("#dial-rev").knob({
+    'change': function(v) {
+      col = getColour(v / 80.0);
+      console.log(v);
+      console.log(col);
+      $('#dial-rev').trigger('configure', {'fgColor': col});
+    }
   });
 }

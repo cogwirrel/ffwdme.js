@@ -3,6 +3,7 @@ html, body {
   color: #333;
   height: 100%;
   overflow: hidden;
+  background-color: black;
 }
 
 #loader {
@@ -40,4 +41,23 @@ html, body {
 
 #playground.hidden {
   display: none;
+}
+
+#container-dials {
+  background-color: black;
+}
+
+.big-dial {
+  position: absolute;
+}
+
+.outer-speedo {
+  margin-left: -10vw;
+  margin-top: 14vh;
+}
+
+.inner-speedo {
+  position: relative;
+  margin: 0 auto;
+  width: 50%;
 }
