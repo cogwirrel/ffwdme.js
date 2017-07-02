@@ -7,6 +7,31 @@ function init() {
     $('#container-' + view).show();
   };
 
+  // Show dials by default
+  window.pinav.switch_to('dials');
+
+  var getColour = function( v ) {
+    var theColor = "";
+    if ( v < 50 ) {
+          myGreen = 255;
+          myRed = parseInt( ( ( v * 2 ) * 255 ) / 100 );
+      }
+    else  {
+          myGreen = parseInt( ( ( 100 - v ) * 2 ) * 255 / 100 );
+          myRed = 255;
+      }
+    theColor = "rgb(" + myRed + "," + myGreen + ",0)"; 
+    return( theColor );
+  };
+
+  $("#dial-speed").knob();
+  $("#dial-rev").knob();
+
+  window.update_rev_colours = function(v) {
+    var col = getColour(v / 80.0);
+    $('#dial-rev').trigger('configure', {'fgColor': col});
+  };
+
   window.socket.on('navigate-to', function(payload) {
     console.log('Navigate to request!');
     window.pinav.switch_to('nav');
@@ -19,6 +44,14 @@ function init() {
     console.log('Custom action received!');
     console.log(payload);
     window.pinav.switch_to(payload.page);
+  });
+
+  window.socket.on('ecu-update', function(payload) {
+    var revs = parseFloat(payload['Engine Speed(rpm)']);
+    var speed = parseFloat(payload['Vehicle Speed(Km/h)']);
+    $('#dial-rev').val(revs).trigger('change');
+    window.update_rev_colours(revs);
+    $('#dial-speed').val(speed).trigger('change');
   });
 
 
@@ -78,28 +111,4 @@ function init() {
     ffwdme.navigation.setRoute(response.route).start();
   });
 
-  var getColour = function( v ) {
-    var theColor = "";
-    if ( v < 50 ) {
-          myGreen = 255;
-          myRed = parseInt( ( ( v * 2 ) * 255 ) / 100 );
-      }
-    else  {
-          myGreen = parseInt( ( ( 100 - v ) * 2 ) * 255 / 100 );
-          myRed = 255;
-      }
-    theColor = "rgb(" + myRed + "," + myGreen + ",0)"; 
-    return( theColor );
-  };
-
-  $("#dial-speed").knob();
-
-  $("#dial-rev").knob({
-    'change': function(v) {
-      col = getColour(v / 80.0);
-      console.log(v);
-      console.log(col);
-      $('#dial-rev').trigger('configure', {'fgColor': col});
-    }
-  });
 }
