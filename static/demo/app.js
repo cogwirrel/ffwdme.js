@@ -46,13 +46,80 @@ function init() {
     window.pinav.switch_to(payload.page);
   });
 
-  window.socket.on('ecu-update', function(payload) {
-    var revs = parseFloat(payload['Engine Speed(rpm)']);
-    var speed = parseFloat(payload['Vehicle Speed(Km/h)']);
-    $('#dial-rev').val(revs).trigger('change');
-    window.update_rev_colours(revs);
-    $('#dial-speed').val(speed).trigger('change');
-  });
+  /*
+  'Engine Speed(rpm)',
+  'Absolute Intake Pressure(Kg/cm^2)',
+  'Pressure Sensor Voltage(mV)',
+  'Throttle Voltage(mV)',
+  'Primary Injector Pulse Width(mSec)',
+  'Fuel Correction',
+  'Leading Ignition Angle(deg)',
+  'Trailing Ignition Angle(deg)',
+  'Fuel Temperature(deg.C)',
+  'Metalling Oil PumpDuty(%)',
+  'Boost Duty(Tp, %)',
+  'Boost Duty(Wg, %)',
+  'Water Temperature(deg.C)',
+  'Intake Air Temperature(deg.C)',
+  'Knocking Level',
+  'Battery Voltage(V)',
+  'Vehicle Speed(Km/h)',
+  'ISCV duty(%)',
+  'O2 Sensor Voltage(mV)',
+  'N/A',
+  'Secondary Injector Pulse Width(mSec)',
+  'N/A'
+  */
+
+  // for testing!
+  setInterval(function() {
+      var data = {
+        'Secondary Injector Pulse Width(mSec)': "1.6015625",
+        'Knocking Level': "1",
+        'Boost Duty(Wg%)': "0.0",
+        'Boost Duty(Tp%)': "40.0",
+        'N/A': "141",
+        'ISCV duty(%)': "1.5",
+        'Leading Ignition Angle(deg)': "-10",
+        'Battery Voltage(V)': "14.3",
+        'Vehicle Speed(Km/h)': "0",
+        'Primary Injector Pulse Width(mSec)': "2.09375",
+        'Trailing Ignition Angle(deg)': "-12",
+        'Metalling Oil PumpDuty(%)': "0.0",
+        'Pressure Sensor Voltage(mV)': "1370",
+        'Fuel Correction': "1.0",
+        'Engine Speed(rpm)': "975",
+        'Intake Air Temperature(deg.C)': "175",
+        'Fuel Temperature(deg.C)': "-80",
+        'Throttle Voltage(mV)': "0",
+        'Absolute Intake Pressure(Kg/cm^2)': "0.1973",
+        'O2 Sensor Voltage(mV)': "0.0",
+        'Water Temperature(deg.C)': "81",
+      };
+
+      // Uncomment this line to test displaying ECU data!
+      //window.onEcuUpdate(data);
+
+  }, 3000);
+
+
+  window.onEcuUpdate = function(payload) {
+    try {
+      var revs = parseFloat(payload['Engine Speed(rpm)']);
+      var speed = parseFloat(payload['Vehicle Speed(Km/h)']);
+      $('#dial-rev').val(revs).trigger('change');
+      window.update_rev_colours(revs);
+      $('#dial-speed').val(speed).trigger('change');
+      var battery = Number(payload['Battery Voltage(V)']).toFixed(1);
+      $('#water-temperature').text("Water: " + payload['Water Temperature(deg.C)'] + "°C");
+      $('#battery-voltage').text("Battery: " + battery + "V");
+    } catch (e) {
+      console.log("Got an error setting ecu data - skipping!");
+    }
+    
+  };
+
+  window.socket.on('ecu-update', window.onEcuUpdate);
 
 
   ffwdme.on('geoposition:init', function() {

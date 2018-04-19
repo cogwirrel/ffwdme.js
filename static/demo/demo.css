@@ -6,6 +6,10 @@ html, body {
   background-color: black;
 }
 
+p {
+  font-family: monospace;
+}
+
 #loader {
   position: absolute;
   width: 160px;
@@ -60,4 +64,14 @@ html, body {
   position: relative;
   margin: 0 auto;
   width: 50%;
+}
+
+.raw-data-container {
+  position: absolute;
+  left: 100px;
+}
+
+.individual-value {
+  color: #fff;
+  font-size: 30px;
 }
